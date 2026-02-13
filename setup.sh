@@ -153,19 +153,7 @@ fi
 # -- Essential packages --------------------------------------
 
 echo "[SETUP] Installing essentials..."
-apt-get install -y -qq   
-curl   
-wget   
-jq   
-htop   
-mosh   
-tmux   
-build-essential   
-ca-certificates   
-gnupg   
-unzip   
-ripgrep   
-fd-find
+apt-get install -y -qq curl wget jq htop mosh tmux build-essential ca-certificates gnupg unzip ripgrep fd-find
 
 # -- Zsh + Oh My Zsh ----------------------------------------------------------
 
@@ -184,8 +172,7 @@ chsh -s "$(which zsh)" "$USERNAME"
 
 echo "[SETUP] Installing Neovim..."
 if ! command -v nvim &>/dev/null; then
-curl -fsSL -o /tmp/nvim.tar.gz   
-"https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.tar.gz"
+curl -fsSL -o /tmp/nvim.tar.gz "https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.tar.gz"
 tar -C /opt -xzf /tmp/nvim.tar.gz
 ln -sf /opt/nvim-linux-x86_64/bin/nvim /usr/local/bin/nvim
 rm /tmp/nvim.tar.gz

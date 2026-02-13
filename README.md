@@ -18,6 +18,13 @@ curl -fsSL -o /tmp/setup.sh https://raw.githubusercontent.com/jnardiello/AgentBo
   && GITHUB_TOKEN=<paste-from-password-manager> bash /tmp/setup.sh
 ```
 
+Tip: use the exact `AgentBox` case in the URL. If you ever get a cached stale version, pin the commit:
+
+```bash
+curl -fsSL -o /tmp/setup.sh https://raw.githubusercontent.com/jnardiello/AgentBox/<commit>/setup.sh \
+  && GITHUB_TOKEN=<paste-from-password-manager> bash /tmp/setup.sh
+```
+
 Requires a GitHub PAT with `admin:public_key` scope.
 
 ## After setup

@@ -81,6 +81,11 @@ echo "[SETUP] Hardening SSH..."
 SSHD_CONFIG="/etc/ssh/sshd_config"
 HARDEN_CONF="/etc/ssh/sshd_config.d/99-agentbox-hardening.conf"
 
+# Ensure sshd_config.d is included for the hardening drop-in.
+if ! grep -Eq "^[[:space:]]*Include[[:space:]]*/etc/ssh/sshd_config.d/\\*\\.conf" "$SSHD_CONFIG"; then
+	echo "Include /etc/ssh/sshd_config.d/*.conf" >> "$SSHD_CONFIG"
+fi
+
 # Keep policy explicit and remove possible duplicates from the main config.
 sed -i -E "/^[[:space:]]*#?[[:space:]]*(PermitRootLogin|PasswordAuthentication|KbdInteractiveAuthentication|PubkeyAuthentication)[[:space:]]/d" "$SSHD_CONFIG"
 

@@ -273,6 +273,23 @@ else
 echo "[SETUP] GitHub SSH key already exists, skipping"
 fi
 
+if [ ! -f "${USER_SSH_DIR}/config" ] || ! grep -q "StrictHostKeyChecking accept-new" "${USER_SSH_DIR}/config" 2>/dev/null; then
+cat > "${USER_SSH_DIR}/config" <<EOF
+Host github.com
+IdentityFile ${SSH_KEY_PATH}
+IdentitiesOnly yes
+StrictHostKeyChecking accept-new
+EOF
+fi
+chown "${USERNAME}:${USERNAME}" "${USER_SSH_DIR}/config"
+chmod 600 "${USER_SSH_DIR}/config"
+
+if [ ! -f "${USER_SSH_DIR}/known_hosts" ] || ! grep -q '^github.com ' "${USER_SSH_DIR}/known_hosts" 2>/dev/null; then
+sudo -u "$USERNAME" ssh-keyscan -H github.com >> "${USER_SSH_DIR}/known_hosts" 2>/dev/null || true
+chown "${USERNAME}:${USERNAME}" "${USER_SSH_DIR}/known_hosts"
+chmod 644 "${USER_SSH_DIR}/known_hosts"
+fi
+
 # -- Dotfiles --------------------------------------------
 
 echo "[SETUP] Setting up dotfiles..."

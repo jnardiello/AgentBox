@@ -287,7 +287,13 @@ sudo -u "$USERNAME" gh auth logout --hostname github.com 2>/dev/null || true
 
 echo "[SETUP] Setting up dotfiles..."
 if [ ! -d "$DOTFILES_DIR" ]; then
-sudo -u "$USERNAME" git clone "$DOTFILES_REPO" "$DOTFILES_DIR"
+if ! sudo -u "$USERNAME" git clone "$DOTFILES_REPO" "$DOTFILES_DIR"; then
+	echo "[SETUP][WARN] SSH clone failed for dotfiles; retrying with GitHub CLI auth..."
+	if ! sudo -u "$USERNAME" env GH_TOKEN="$GITHUB_TOKEN" gh repo clone "$GITHUB_USER/local-machine" "$DOTFILES_DIR"; then
+		echo "[SETUP][WARN] Dotfiles clone failed"
+		false
+	fi
+fi
 else
 echo "[SETUP] Dotfiles repo already cloned, pulling latest..."
 sudo -u "$USERNAME" git -C "$DOTFILES_DIR" pull || true

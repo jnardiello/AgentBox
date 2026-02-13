@@ -365,28 +365,28 @@ sudo -u "$USERNAME" npm config set prefix "/home/${USERNAME}/.npm-global"
 # Claude Code
 
 if ! sudo -u "$USERNAME" bash -c 'export PATH=$PATH:$HOME/.npm-global/bin && command -v claude' &>/dev/null; then
-echo "[SETUP] Installing Claude Code..."
-sudo -u "$USERNAME" npm install -g @anthropic-ai/claude-code
+	echo "[SETUP] Installing Claude Code..."
+	sudo -u "$USERNAME" bash -c "cd /home/$USERNAME && npm install -g @anthropic-ai/claude-code"
 else
-echo "[SETUP] Claude Code already installed, skipping"
+	echo "[SETUP] Claude Code already installed, skipping"
 fi
 
 # Codex
 
 if ! sudo -u "$USERNAME" bash -c 'export PATH=$PATH:$HOME/.npm-global/bin && command -v codex' &>/dev/null; then
-echo "[SETUP] Installing Codex..."
-sudo -u "$USERNAME" npm install -g @openai/codex
+	echo "[SETUP] Installing Codex..."
+	sudo -u "$USERNAME" bash -c "cd /home/$USERNAME && npm install -g @openai/codex"
 else
-echo "[SETUP] Codex already installed, skipping"
+	echo "[SETUP] Codex already installed, skipping"
 fi
 
 # OpenCode
 
 if ! sudo -u "$USERNAME" bash -c 'export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin && command -v opencode' &>/dev/null; then
-echo "[SETUP] Installing OpenCode..."
-sudo -u "$USERNAME" bash -c 'export PATH=$PATH:/usr/local/go/bin && export GOPATH=$HOME/go && go install github.com/opencode-ai/opencode@latest'
+	echo "[SETUP] Installing OpenCode..."
+	sudo -u "$USERNAME" bash -c "cd /home/$USERNAME && export PATH=$PATH:/usr/local/go/bin && export GOPATH=$HOME/go && go install github.com/opencode-ai/opencode@latest"
 else
-echo "[SETUP] OpenCode already installed, skipping"
+	echo "[SETUP] OpenCode already installed, skipping"
 fi
 
 # -- Done ----------------------------------------------

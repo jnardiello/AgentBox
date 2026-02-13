@@ -83,7 +83,14 @@ sed -i 's/^#?PermitRootLogin.*/PermitRootLogin no/' "$SSHD_CONFIG"
 sed -i 's/^#?PasswordAuthentication.*/PasswordAuthentication no/' "$SSHD_CONFIG"
 sed -i 's/^#?KbdInteractiveAuthentication.*/KbdInteractiveAuthentication no/' "$SSHD_CONFIG"
 sed -i 's/^#?PubkeyAuthentication.*/PubkeyAuthentication yes/' "$SSHD_CONFIG"
-systemctl reload sshd
+
+if systemctl list-unit-files --type=service | grep -q '^sshd.service'; then
+	systemctl reload sshd
+elif systemctl list-unit-files --type=service | grep -q '^ssh.service'; then
+	systemctl reload ssh
+else
+	echo "[SETUP][WARN] SSH service not found, skipping reload"
+fi
 
 # -- Firewall --------------------------------------------
 

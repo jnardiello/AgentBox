@@ -255,20 +255,6 @@ sudo -u "$USERNAME" git config --global core.editor nvim
 if [ ! -f "$SSH_KEY_PATH" ]; then
 echo "[SETUP] Generating SSH key for GitHub..."
 sudo -u "$USERNAME" ssh-keygen -t ed25519 -C "devbox-$(hostname)" -f "$SSH_KEY_PATH" -N ""
-
-echo "[SETUP] Uploading SSH key to GitHub..."
-echo "$GITHUB_TOKEN" | sudo -u "$USERNAME" gh auth login --with-token
-sudo -u "$USERNAME" gh ssh-key add "${SSH_KEY_PATH}.pub" --title "devbox-$(hostname)"
-sudo -u "$USERNAME" gh auth logout --hostname github.com 2>/dev/null || true
-
-cat > "${USER_SSH_DIR}/config" <<EOF
-Host github.com
-IdentityFile ${SSH_KEY_PATH}
-IdentitiesOnly yes
-StrictHostKeyChecking accept-new
-EOF
-chown "${USERNAME}:${USERNAME}" "${USER_SSH_DIR}/config"
-chmod 600 "${USER_SSH_DIR}/config"
 else
 echo "[SETUP] GitHub SSH key already exists, skipping"
 fi
@@ -289,6 +275,13 @@ sudo -u "$USERNAME" ssh-keyscan -H github.com >> "${USER_SSH_DIR}/known_hosts" 2
 chown "${USERNAME}:${USERNAME}" "${USER_SSH_DIR}/known_hosts"
 chmod 644 "${USER_SSH_DIR}/known_hosts"
 fi
+
+echo "[SETUP] Uploading SSH key to GitHub..."
+echo "$GITHUB_TOKEN" | sudo -u "$USERNAME" gh auth login --with-token
+if ! sudo -u "$USERNAME" gh ssh-key add "${SSH_KEY_PATH}.pub" --title "devbox-$(hostname)" 2>/dev/null; then
+	echo "[SETUP][WARN] GitHub key already exists or could not be added"
+fi
+sudo -u "$USERNAME" gh auth logout --hostname github.com 2>/dev/null || true
 
 # -- Dotfiles --------------------------------------------
 

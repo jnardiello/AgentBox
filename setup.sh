@@ -79,7 +79,7 @@ chmod 600 "${USER_SSH_DIR}/authorized_keys"
 
 echo "[SETUP] Hardening SSH..."
 SSHD_CONFIG="/etc/ssh/sshd_config"
-sed -i 's/^#?PermitRootLogin.*/PermitRootLogin no/' "$SSHD_CONFIG"
+sed -i 's/^#?PermitRootLogin.*/PermitRootLogin prohibit-password/' "$SSHD_CONFIG"
 sed -i 's/^#?PasswordAuthentication.*/PasswordAuthentication no/' "$SSHD_CONFIG"
 sed -i 's/^#?KbdInteractiveAuthentication.*/KbdInteractiveAuthentication no/' "$SSHD_CONFIG"
 sed -i 's/^#?PubkeyAuthentication.*/PubkeyAuthentication yes/' "$SSHD_CONFIG"

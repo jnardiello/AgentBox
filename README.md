@@ -14,8 +14,8 @@ Zero-touch setup for my dev box. Ubuntu 24.04 on Hetzner.
 ## Usage
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/jnardiello/agentbox/main/setup.sh \
-  | GITHUB_TOKEN=<paste-from-password-manager> bash
+curl -fsSL -o /tmp/setup.sh https://raw.githubusercontent.com/jnardiello/agentbox/main/setup.sh \
+  && GITHUB_TOKEN=<paste-from-password-manager> bash /tmp/setup.sh
 ```
 
 Requires a GitHub PAT with `admin:public_key` scope.

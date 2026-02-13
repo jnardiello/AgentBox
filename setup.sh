@@ -84,15 +84,21 @@ sed -i 's/^#?PasswordAuthentication.*/PasswordAuthentication no/' "$SSHD_CONFIG"
 sed -i 's/^#?KbdInteractiveAuthentication.*/KbdInteractiveAuthentication no/' "$SSHD_CONFIG"
 sed -i 's/^#?PubkeyAuthentication.*/PubkeyAuthentication yes/' "$SSHD_CONFIG"
 
-systemctl reload sshd 2>/dev/null || \
-	  systemctl reload ssh 2>/dev/null || \
-	  systemctl restart sshd 2>/dev/null || \
-	  systemctl restart ssh 2>/dev/null || \
-	  service ssh reload 2>/dev/null || \
-	  service sshd reload 2>/dev/null || \
-	  service ssh restart 2>/dev/null || \
-	  service sshd restart 2>/dev/null || \
-	  true
+set +e
+if command -v systemctl >/dev/null 2>&1; then
+	if systemctl list-units --type=service | grep -qE '^sshd\.service|^ssh\.service'; then
+		systemctl reload sshd 2>/dev/null
+		systemctl reload ssh 2>/dev/null
+		systemctl restart sshd 2>/dev/null
+		systemctl restart ssh 2>/dev/null
+	fi
+else
+	service sshd restart 2>/dev/null
+	service ssh restart 2>/dev/null
+	service sshd reload 2>/dev/null
+	service ssh reload 2>/dev/null
+fi
+set -e
 
 # -- Firewall --------------------------------------------
 

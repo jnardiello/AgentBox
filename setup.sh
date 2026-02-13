@@ -382,9 +382,9 @@ fi
 
 # OpenCode
 
-if ! sudo -u "$USERNAME" bash -c 'export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin && command -v opencode' &>/dev/null; then
+if ! sudo -u "$USERNAME" bash -c "export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin; export GOPATH=$HOME/go; export GOMODCACHE=$HOME/go/pkg/mod; export GOCACHE=$HOME/.cache/go-build; mkdir -p \"$HOME/go/pkg/mod\" \"$HOME/.cache/go-build\"; command -v opencode" &>/dev/null; then
 	echo "[SETUP] Installing OpenCode..."
-	sudo -u "$USERNAME" bash -c "cd /home/$USERNAME && export PATH=$PATH:/usr/local/go/bin && export GOPATH=$HOME/go && go install github.com/opencode-ai/opencode@latest"
+	sudo -u "$USERNAME" bash -c "cd /home/$USERNAME && mkdir -p \"$HOME/go/pkg/mod\" \"$HOME/.cache/go-build\" && export PATH=$PATH:/usr/local/go/bin && export GOPATH=$HOME/go && export GOMODCACHE=$HOME/go/pkg/mod && export GOCACHE=$HOME/.cache/go-build && go install github.com/opencode-ai/opencode@latest"
 else
 	echo "[SETUP] OpenCode already installed, skipping"
 fi

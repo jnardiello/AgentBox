@@ -277,19 +277,29 @@ chmod 644 "${USER_SSH_DIR}/known_hosts"
 fi
 
 echo "[SETUP] Uploading SSH key to GitHub..."
-echo "$GITHUB_TOKEN" | sudo -u "$USERNAME" gh auth login --with-token
-if ! sudo -u "$USERNAME" gh ssh-key add "${SSH_KEY_PATH}.pub" --title "devbox-$(hostname)" 2>/dev/null; then
-	echo "[SETUP][WARN] GitHub key already exists or could not be added"
+PUB_KEY=$(cat "${SSH_KEY_PATH}.pub")
+PUB_KEY_ESCAPED=$(printf '%s' "$PUB_KEY" | sed 's/\\/\\\\/g; s/"/\\"/g')
+SSH_KEY_ADD_CODE=$(curl -sS -o /tmp/github_key_response.json -w "%{http_code}" \
+	-X POST \
+	-H "Authorization: token ${GITHUB_TOKEN}" \
+	-H "Accept: application/vnd.github+json" \
+	https://api.github.com/user/keys \
+	-d "{\"title\":\"devbox-$(hostname)\",\"key\":\"${PUB_KEY_ESCAPED}\"}" || true)
+if [ "$SSH_KEY_ADD_CODE" = "201" ]; then
+echo "[SETUP] GitHub SSH key added"
+elif [ "$SSH_KEY_ADD_CODE" = "422" ]; then
+echo "[SETUP][WARN] GitHub key already exists"
+else
+echo "[SETUP][WARN] Could not register SSH key with GitHub. HTTP ${SSH_KEY_ADD_CODE}"
 fi
-sudo -u "$USERNAME" gh auth logout --hostname github.com 2>/dev/null || true
 
 # -- Dotfiles --------------------------------------------
 
 echo "[SETUP] Setting up dotfiles..."
 if [ ! -d "$DOTFILES_DIR" ]; then
 if ! sudo -u "$USERNAME" git clone "$DOTFILES_REPO" "$DOTFILES_DIR"; then
-	echo "[SETUP][WARN] SSH clone failed for dotfiles; retrying with GitHub CLI auth..."
-	if ! sudo -u "$USERNAME" env GH_TOKEN="$GITHUB_TOKEN" gh repo clone "$GITHUB_USER/local-machine" "$DOTFILES_DIR"; then
+	echo "[SETUP][WARN] SSH clone failed for dotfiles; retrying over HTTPS..."
+	if ! sudo -u "$USERNAME" git clone "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_USER}/local-machine.git" "$DOTFILES_DIR"; then
 		echo "[SETUP][WARN] Dotfiles clone failed"
 		false
 	fi

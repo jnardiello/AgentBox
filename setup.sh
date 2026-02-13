@@ -79,10 +79,21 @@ chmod 600 "${USER_SSH_DIR}/authorized_keys"
 
 echo "[SETUP] Hardening SSH..."
 SSHD_CONFIG="/etc/ssh/sshd_config"
-sed -i 's/^#?PermitRootLogin.*/PermitRootLogin prohibit-password/' "$SSHD_CONFIG"
-sed -i 's/^#?PasswordAuthentication.*/PasswordAuthentication no/' "$SSHD_CONFIG"
-sed -i 's/^#?KbdInteractiveAuthentication.*/KbdInteractiveAuthentication no/' "$SSHD_CONFIG"
-sed -i 's/^#?PubkeyAuthentication.*/PubkeyAuthentication yes/' "$SSHD_CONFIG"
+
+for KV in \
+	"PermitRootLogin prohibit-password" \
+	"PasswordAuthentication no" \
+	"KbdInteractiveAuthentication no" \
+	"PubkeyAuthentication yes"
+do
+	KEY="${KV%% *}"
+	VAL="${KV#* }"
+	if grep -Eq "^[[:space:]]*#?[[:space:]]*${KEY}[[:space:]]" "$SSHD_CONFIG"; then
+		sed -i -E "s|^[[:space:]]*#?[[:space:]]*${KEY}[[:space:]].*|${KEY} ${VAL}|" "$SSHD_CONFIG"
+	else
+		echo "${KEY} ${VAL}" >> "$SSHD_CONFIG"
+	fi
+done
 
 SSH_SERVICE=""
 if command -v systemctl >/dev/null 2>&1; then

@@ -162,8 +162,7 @@ apt-get install -y -qq zsh
 
 if [ ! -d "/home/${USERNAME}/.oh-my-zsh" ]; then
 echo "[SETUP] Installing Oh My Zsh..."
-sudo -u "$USERNAME" sh -c   
-'RUNZSH=no CHSH=no sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"'
+sudo -u "$USERNAME" sh -c 'RUNZSH=no CHSH=no sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"'
 fi
 
 chsh -s "$(which zsh)" "$USERNAME"
@@ -187,9 +186,7 @@ if ! command -v docker &>/dev/null; then
 install -m 0755 -d /etc/apt/keyrings
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg
 chmod a+r /etc/apt/keyrings/docker.gpg
-echo   
-"deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu   
-$(. /etc/os-release && echo "$VERSION_CODENAME") stable" |   
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo "$VERSION_CODENAME") stable" |
 tee /etc/apt/sources.list.d/docker.list > /dev/null
 apt-get update -qq
 apt-get install -y -qq docker-ce docker-ce-cli containerd.io docker-compose-plugin
@@ -290,11 +287,11 @@ ln -sf "${DOTFILES_DIR}/dotfiles/zsh/zshrc" "/home/${USERNAME}/.zshrc"
 ln -sf "${DOTFILES_DIR}/dotfiles/git/gitconfig" "/home/${USERNAME}/.gitconfig"
 ln -sf "${DOTFILES_DIR}/dotfiles/git/gitignore_global" "/home/${USERNAME}/.gitignore_global"
 
-chown -h "${USERNAME}:${USERNAME}"   
-"/home/${USERNAME}/.config/nvim"   
-"/home/${USERNAME}/.tmux.conf"   
-"/home/${USERNAME}/.zshrc"   
-"/home/${USERNAME}/.gitconfig"   
+chown -h "${USERNAME}:${USERNAME}" \
+"/home/${USERNAME}/.config/nvim" \
+"/home/${USERNAME}/.tmux.conf" \
+"/home/${USERNAME}/.zshrc" \
+"/home/${USERNAME}/.gitconfig" \
 "/home/${USERNAME}/.gitignore_global"
 
 # -- Shell profile additions --------------------------------------------------

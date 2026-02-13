@@ -193,6 +193,22 @@ else
 echo "[SETUP] Neovim already installed, skipping"
 fi
 
+# -- Vim compatibility --------------------------------------------
+
+if command -v nvim &>/dev/null; then
+NIM_BIN="$(command -v nvim)"
+
+if command -v update-alternatives >/dev/null 2>&1; then
+update-alternatives --install /usr/bin/vim vim "${NIM_BIN}" 120 || true
+update-alternatives --set vim "${NIM_BIN}" || true
+update-alternatives --install /usr/bin/vi vi "${NIM_BIN}" 120 || true
+update-alternatives --set vi "${NIM_BIN}" || true
+fi
+
+ln -sf "${NIM_BIN}" /usr/local/bin/vim
+ln -sf "${NIM_BIN}" /usr/local/bin/vi
+fi
+
 # -- Docker ----------------------------------------------
 
 echo "[SETUP] Installing Docker..."
@@ -345,6 +361,7 @@ cat > "$ZSHENV" <<'EOF'
 export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin:$HOME/.local/bin:$HOME/.npm-global/bin
 export GOPATH=$HOME/go
 export EDITOR=nvim
+export VISUAL=nvim
 EOF
 chown "${USERNAME}:${USERNAME}" "$ZSHENV"
 fi

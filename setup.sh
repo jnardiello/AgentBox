@@ -79,21 +79,19 @@ chmod 600 "${USER_SSH_DIR}/authorized_keys"
 
 echo "[SETUP] Hardening SSH..."
 SSHD_CONFIG="/etc/ssh/sshd_config"
+HARDEN_CONF="/etc/ssh/sshd_config.d/99-agentbox-hardening.conf"
 
-for KV in \
-	"PermitRootLogin prohibit-password" \
-	"PasswordAuthentication no" \
-	"KbdInteractiveAuthentication no" \
-	"PubkeyAuthentication yes"
-do
-	KEY="${KV%% *}"
-	VAL="${KV#* }"
-	if grep -Eq "^[[:space:]]*#?[[:space:]]*${KEY}[[:space:]]" "$SSHD_CONFIG"; then
-		sed -i -E "s|^[[:space:]]*#?[[:space:]]*${KEY}[[:space:]].*|${KEY} ${VAL}|" "$SSHD_CONFIG"
-	else
-		echo "${KEY} ${VAL}" >> "$SSHD_CONFIG"
-	fi
-done
+# Keep policy explicit and remove possible duplicates from the main config.
+sed -i -E "/^[[:space:]]*#?[[:space:]]*(PermitRootLogin|PasswordAuthentication|KbdInteractiveAuthentication|PubkeyAuthentication)[[:space:]]/d" "$SSHD_CONFIG"
+
+cat > "$HARDEN_CONF" <<'EOF'
+# Managed by agentbox setup
+PermitRootLogin prohibit-password
+PasswordAuthentication no
+KbdInteractiveAuthentication no
+PubkeyAuthentication yes
+EOF
+chmod 0644 "$HARDEN_CONF"
 
 SSH_SERVICE=""
 if command -v systemctl >/dev/null 2>&1; then

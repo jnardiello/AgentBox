@@ -14,7 +14,7 @@ Zero-touch setup for my dev box. Ubuntu 24.04 on Hetzner.
 ## Usage
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/jnardiello/devbox/main/setup.sh \
+curl -fsSL https://raw.githubusercontent.com/jnardiello/agentbox/main/setup.sh \
   | GITHUB_TOKEN=<paste-from-password-manager> bash
 ```
 

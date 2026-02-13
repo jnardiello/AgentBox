@@ -350,6 +350,25 @@ chown -h "${USERNAME}:${USERNAME}" \
 "/home/${USERNAME}/.gitconfig" \
 "/home/${USERNAME}/.gitignore_global"
 
+# -- Neovim plugin manager --------------------------------------
+
+echo "[SETUP] Ensuring vim-plug is installed..."
+for AUTOLOAD_DIR in \
+  "/home/${USERNAME}/.local/share/nvim/site/autoload" \
+  "/home/${USERNAME}/.config/nvim/autoload"
+do
+	sudo -u "$USERNAME" mkdir -p "$AUTOLOAD_DIR"
+	if [ ! -f "${AUTOLOAD_DIR}/plug.vim" ]; then
+		sudo -u "$USERNAME" curl -fsSL -o "${AUTOLOAD_DIR}/plug.vim" \
+			https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+	fi
+done
+sudo -u "$USERNAME" chown -R "${USERNAME}:${USERNAME}" "/home/${USERNAME}/.local/share/nvim" "/home/${USERNAME}/.config/nvim/autoload"
+
+if command -v nvim &>/dev/null && [ -f "/home/${USERNAME}/.config/nvim/init.vim" ]; then
+	sudo -u "$USERNAME" nvim --headless "+PlugInstall --sync" +qa || true
+fi
+
 # -- Shell profile additions --------------------------------------------------
 
 ZSHENV="/home/${USERNAME}/.zshenv"

@@ -42,6 +42,11 @@ fi
 
 echo “🔧 Starting devbox setup…”
 
+# Prevent needrestart from stealing stdin when piping via curl|bash
+
+export DEBIAN_FRONTEND=noninteractive
+export NEEDRESTART_MODE=a
+
 # — System updates ———————————————————–
 
 echo “📦 Updating system packages…”
